@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hybrid Synergy Drive Companion // Diagnostic Tool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: linear-gradient(135deg, #f0f4f8 0%, #dbeafe 100%);
+            -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden;
+        }
+
+        .bg-stripe {
+            position: fixed;
+            top: 25%;
+            left: 0;
+            width: 100%;
+            height: 350px;
+            background-image: url('https://i.ibb.co/bg1WNWHR/2008-Toyota-Prius-12.jpg');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.35;
+            filter: saturate(0.9) contrast(1.1);
+            z-index: -1;
+            pointer-events: none;
+            mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
+            -webkit-mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
+        }
+
+        .glass-card { 
+            background: rgba(255, 255, 255, 0.85); 
+            backdrop-filter: blur(30px); 
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .hybrid-glow-blue { box-shadow: 0 10px 40px rgba(14, 165, 233, 0.15); }
+        .hybrid-glow-green { box-shadow: 0 10px 40px rgba(16, 185, 129, 0.15); }
+        
+        .tab-active { background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.08); color: #0f172a; }
+        
+        .modal-enter { animation: modalIn 0.3s ease-out forwards; }
+        @keyframes modalIn { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        input:focus, textarea:focus { transform: scale(1.01); }
+        button:active { transform: scale(0.98); }
+    </style>
+</head>
+<body class="text-slate-900 min-h-screen flex flex-col items-center px-4 py-8 md:py-12 opacity-0 transition-opacity duration-500">
+
+    <div class="bg-stripe"></div>
+
+    <div id="welcomeModal" class="fixed inset-0 z-[100] flex items-center justify-center p-6 hidden">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
+        <div class="glass-card max-w-sm w-full rounded-[2.5rem] p-8 relative modal-enter shadow-2xl">
+            <button onclick="closeModal('welcomeModal')" class="absolute top-6 right-6 w-8 h-8 flex items-center justify-center bg-slate-100 rounded-full text-slate-500 hover:text-slate-900">✕</button>
+            <h3 class="text-xl font-black mb-4 pr-8">Welcome, Prius Pilot! ⚡</h3>
+            <div class="text-xs text-slate-600 space-y-3 font-medium leading-relaxed">
+                <p>This tool is designed to solve the #1 issue with the Gen 2 Prius: <span class="font-bold text-slate-900">The "Guessing Game" fuel gauge.</span></p>
+                <p>By entering your fill-up data, we calculate your actual bladder capacity based on current temperature and location. This allows us to provide a high-confidence <span class="text-sky-600 font-bold">Distance To Empty</span> estimation.</p>
+                <p class="bg-sky-50 p-3 rounded-2xl border border-sky-100 text-sky-800">🔒 <span class="font-bold">Privacy First:</span> All data stays on your device. I do not collect any personal information.</p>
+            </div>
+            <button onclick="closeModal('welcomeModal')" class="w-full mt-6 bg-slate-900 text-white py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest">Get Started</button>
+        </div>
+    </div>
+
+    <div id="contactModal" class="fixed inset-0 z-[100] flex items-center justify-center p-6 hidden">
+        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"></div>
+        <div class="glass-card max-w-md w-full rounded-[2.5rem] p-8 relative modal-enter shadow-2xl border-sky-200">
+            <button onclick="closeModal('contactModal')" class="absolute top-6 right-6 w-8 h-8 flex items-center justify-center bg-slate-100 rounded-full text-slate-500 hover:text-slate-900">✕</button>
+            <h3 class="text-xl font-black mb-1">Feedback & Suggestions</h3>
+            <p class="text-[10px] font-black text-sky-600 uppercase tracking-widest mb-6">Drive the development forward</p>
+            
+            <form action="https://formspree.io/f/maqkwqkp" method="POST" class="space-y-4">
+                <div>
+                    <label class="block text-[10px] font-black text-slate-500 uppercase ml-2 mb-1">Your Name</label>
+                    <input type="text" name="name" required class="w-full px-5 py-3 bg-white/70 border border-slate-200 rounded-xl outline-none text-sm font-bold shadow-sm">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-slate-500 uppercase ml-2 mb-1">Email Address</label>
+                    <input type="email" name="email" required class="w-full px-5 py-3 bg-white/70 border border-slate-200 rounded-xl outline-none text-sm font-bold shadow-sm">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-slate-500 uppercase ml-2 mb-1">Message / Suggestion</label>
+                    <textarea name="message" rows="4" required class="w-full px-5 py-3 bg-white/70 border border-slate-200 rounded-xl outline-none text-sm font-bold shadow-sm resize-none"></textarea>
+                </div>
+                <button type="submit" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:bg-sky-600 transition-all">Transmit Message</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="w-full max-w-md relative">
+        <header class="text-center mb-10">
+            <div class="flex justify-center mb-6">
+                <div class="relative group">
+                    <div class="absolute -inset-4 bg-sky-400 rounded-full blur-2xl opacity-10 group-hover:opacity-20 transition duration-1000"></div>
+                    <img src="https://i.ibb.co/mr2hGXGh/prius-logo.png" alt="Prius Logo" class="relative h-14 w-auto object-contain">
+                </div>
+            </div>
+            <h1 class="text-2xl font-black tracking-tighter text-slate-900 px-4 leading-tight">
+                Hybrid Synergy Drive <span class="text-sky-600">Companion</span>
+            </h1>
+            <p class="text-slate-500 font-extrabold text-[9px] mt-2 uppercase tracking-[0.4em]">Gen 2 Specialist Diagnostic Module</p>
+        </header>
+
+        <!-- Main Tool Card -->
+        <div class="glass-card rounded-[2.5rem] p-6 shadow-2xl shadow-slate-900/5 mb-6 hybrid-glow-blue border-white/80">
+            <!-- Navigation -->
+            <div class="flex p-1.5 bg-slate-200/40 rounded-2xl mb-8 border border-white/20">
+                <button id="calcTab" onclick="switchMode('calc')" class="flex-1 py-3 text-sm font-bold rounded-xl transition-all duration-300 tab-active">⛽ Fill-Up</button>
+                <button id="checkTab" onclick="switchMode('check')" class="flex-1 py-3 text-sm font-bold rounded-xl transition-all duration-300 text-slate-500">🔍 Fuel Check</button>
+            </div>
+
+            <!-- Unit Selector -->
+            <div class="flex justify-between items-center mb-8 px-2">
+                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">System Locale</span>
+                <div class="flex gap-1 p-1 bg-slate-100/50 rounded-full border border-white/20">
+                    <button id="metricBtn" onclick="setUnits('metric')" class="text-[9px] font-black px-4 py-2 rounded-full bg-slate-900 text-white transition-all shadow-lg">METRIC</button>
+                    <button id="imperialBtn" onclick="setUnits('imperial')" class="text-[9px] font-black px-4 py-2 rounded-full text-slate-400 transition-all">IMPERIAL</button>
+                </div>
+            </div>
+
+            <!-- Forms -->
+            <div id="calcForm" class="space-y-5">
+                <div class="space-y-1">
+                    <label id="distLabel" class="block text-[11px] font-black text-slate-500 uppercase ml-2">Trip Distance (km)</label>
+                    <input type="number" id="distance" placeholder="0.0" inputmode="decimal" class="w-full px-5 py-4 bg-white/70 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 outline-none transition-all text-2xl font-black">
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label id="dashLabel" class="block text-[11px] font-black text-slate-500 uppercase ml-2">Dash Avg</label>
+                        <input type="number" id="dashAvg" step="0.1" placeholder="0.0" inputmode="decimal" class="w-full px-5 py-4 bg-white/70 border border-slate-200 rounded-2xl outline-none text-2xl font-black">
+                    </div>
+                    <div class="space-y-1">
+                        <label id="pumpLabel" class="block text-[11px] font-black text-slate-500 uppercase ml-2">Pumped</label>
+                        <input type="number" id="pumpAmount" step="0.01" placeholder="0.0" inputmode="decimal" class="w-full px-5 py-4 bg-white/70 border border-slate-200 rounded-2xl outline-none text-2xl font-black">
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <button onclick="toggleOptional()" class="text-[10px] font-black text-sky-600 flex items-center gap-2 py-2 ml-2">
+                        <span id="toggleIcon" class="w-4 h-4 flex items-center justify-center bg-sky-100 rounded-full">+</span> FUEL COST & ECO IMPACT
+                    </button>
+                    <div id="optionalInputs" class="hidden mt-3 p-4 bg-sky-50/50 rounded-2xl border border-sky-100">
+                        <label id="priceLabel" class="block text-[10px] font-black text-sky-700 uppercase mb-2">Unit Price ($)</label>
+                        <input type="number" id="fuelPrice" step="0.001" placeholder="0.000" inputmode="decimal" class="w-full px-4 py-3 bg-white border border-sky-200 rounded-xl outline-none text-lg font-bold">
+                    </div>
+                </div>
+
+                <button onclick="calculateFuel()" class="w-full bg-slate-900 text-white py-5 rounded-[1.5rem] font-black text-xs uppercase tracking-widest shadow-xl hover:bg-sky-600 transition-all">Run Analysis</button>
+
+                <!-- Results Display -->
+                <div id="calcResults" class="hidden mt-8 pt-8 border-t border-slate-100 animate-in slide-in-from-bottom-4 duration-500">
+                    <div id="maintenanceAlert" class="hidden mb-6 bg-amber-50 border border-amber-200 p-5 rounded-3xl">
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 bg-amber-500 rounded-full flex items-center justify-center text-white shrink-0 shadow-lg">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                            </div>
+                            <ul class="text-[10px] text-amber-800 space-y-2 font-bold leading-tight">
+                                <li>• Air Filter: Check and replace if dirty.</li>
+                                <li>• Tire Pressure: Correct pressure is key for efficiency.</li>
+                                <li>• Alignment: Misalignment increases fuel burn.</li>
+                                <li>• Driving Style: Slow down! It's a Prius, not a sports car.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-br from-emerald-500 to-teal-600 p-6 rounded-3xl text-white hybrid-glow-green mb-4">
+                        <span class="block text-[10px] font-black uppercase opacity-70 tracking-widest mb-1">True Net Efficiency</span>
+                        <div class="flex justify-between items-end">
+                            <span id="trueEff" class="text-3xl font-black">--</span>
+                            <span id="discrepancy" class="text-[10px] font-black bg-white/20 px-3 py-1.5 rounded-full">--</span>
+                        </div>
+                    </div>
+                    <div class="bg-slate-900 p-5 rounded-3xl text-white mb-6">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <span class="block text-[10px] font-bold text-slate-400 uppercase">Est. Bladder Limit</span>
+                                <span id="capacity" class="text-xl font-black">--</span>
+                            </div>
+                            <div id="costDisplay" class="text-right hidden">
+                                <span class="block text-[10px] font-bold text-slate-400 uppercase">Total Spent</span>
+                                <span id="totalCostValue" class="text-xl font-black text-emerald-400">--</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="saveBtn" onclick="requestWeatherAndSave()" class="w-full bg-white border-2 border-slate-900 text-slate-900 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 transition-all">COMMIT TO HISTORY LOG</button>
+                </div>
+            </div>
+
+            <div id="checkForm" class="hidden space-y-6">
+                <div class="bg-sky-50/50 border border-sky-100 p-5 rounded-3xl">
+                    <h4 class="text-sm font-black text-sky-900">Real-Time DTE Estimator</h4>
+                    <p class="text-[10px] text-sky-700 leading-tight mt-1 uppercase font-bold">Based on your historical profile</p>
+                </div>
+                <div class="space-y-4">
+                    <div class="space-y-1">
+                        <label id="checkDistLabel" class="block text-[11px] font-black text-slate-500 uppercase ml-2">Current Trip (km)</label>
+                        <input type="number" id="checkDistance" placeholder="0.0" inputmode="decimal" class="w-full px-5 py-4 bg-white/70 border border-slate-200 rounded-2xl outline-none text-2xl font-black shadow-sm">
+                    </div>
+                    <div class="space-y-1">
+                        <label id="checkDashLabel" class="block text-[11px] font-black text-slate-500 uppercase ml-2">Current Dash Avg</label>
+                        <input type="number" id="checkDashAvg" step="0.1" placeholder="0.0" inputmode="decimal" class="w-full px-5 py-4 bg-white/70 border border-slate-200 rounded-2xl outline-none text-2xl font-black shadow-sm">
+                    </div>
+                </div>
+                <button onclick="runFuelCheck()" class="w-full bg-slate-900 text-white py-5 rounded-[1.5rem] font-black text-xs uppercase tracking-widest shadow-xl hover:bg-emerald-600 transition-all">EXECUTE DIAGNOSIS</button>
+
+                <div id="checkResults" class="hidden mt-8 animate-in zoom-in-95 duration-500">
+                    <div class="bg-slate-900 rounded-[2.5rem] p-8 text-center shadow-2xl relative overflow-hidden border border-white/10">
+                        <span class="block text-[11px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2">Distance To Empty</span>
+                        <span id="checkDTE" class="text-7xl font-black text-white tracking-tighter">--</span>
+                        <div class="mt-8 pt-6 border-t border-white/10 flex justify-between items-center px-2">
+                            <span class="text-xs font-bold text-slate-400 uppercase">Fuel Rem.</span>
+                            <span id="checkRemainingFuel" class="text-xl font-black text-emerald-400">--</span>
+                        </div>
+                    </div>
+                    <p id="checkConfidence" class="text-[10px] text-center text-slate-400 font-bold uppercase tracking-wider mt-5 px-6 leading-relaxed"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- History & Actions -->
+        <div class="glass-card rounded-[2.5rem] p-6 shadow-xl shadow-slate-900/5 mb-10">
+            <div class="flex justify-between items-center mb-6 px-2">
+                <h3 class="text-xs font-black text-slate-900 uppercase tracking-widest">Diagnostic History</h3>
+                <button onclick="clearHistory()" class="text-[9px] font-black text-rose-500 bg-rose-50 px-3 py-1.5 rounded-full hover:bg-rose-100 transition-colors uppercase">Wipe Logs</button>
+            </div>
+            
+            <div id="logContainer" class="space-y-4 max-h-[400px] overflow-y-auto pr-2 no-scrollbar">
+                <!-- Log Entry Point -->
+            </div>
+
+            <div class="mt-8 pt-8 border-t border-slate-200/60 text-center space-y-4">
+                <p class="text-[11px] font-bold text-slate-400 px-6 leading-relaxed uppercase tracking-wider">
+                    Drive forward with the Companion.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-3 justify-center items-center px-4">
+                    <a href="https://paypal.me/alx88678" target="_blank" class="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-6 py-4 bg-slate-900 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl hover:bg-sky-600 transition-all duration-300 group">
+                        <svg class="w-4 h-4 text-sky-400 group-hover:text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M7.076 21.337H9l.87-5.428h2.027c3.96 0 6.714-2.12 6.714-6.19 0-1.423-.393-2.614-1.127-3.486C16.643 5.253 15.223 4.663 13.25 4.663H6.806L4.032 21.337h3.044zm2.74-12.012h3.43c1.07 0 1.83.27 2.27.81.33.41.48.97.48 1.68 0 1.95-1.3 3.01-3.23 3.01h-2.11l.16-1.01.84-5.26.16-2.23z"/></svg>
+                        Donate
+                    </a>
+                    <button onclick="openModal('contactModal')" class="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-6 py-4 bg-white border-2 border-slate-900 text-slate-900 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        Contact
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <footer class="text-center px-8 pb-12">
+            <div class="text-[9px] text-slate-400 font-bold leading-relaxed space-y-4 uppercase tracking-[0.05em]">
+                <p>LEGAL DISCLAIMER: Every effort has been made to ensure the accuracy of this tool, however, estimates depend on sensor accuracy and variable environmental conditions. Do not rely solely on this tool to determine your fuel level. The developer accepts no liability for fuel exhaustion, vehicle damage, or any losses resulting from the use of this data.</p>
+                <p>NOT AFFILIATED WITH TOYOTA MOTOR CORPORATION. "Hybrid Synergy Drive" and "Prius" are registered trademarks of Toyota.</p>
+                <p class="text-slate-300 pt-4">© 2024 HYBRID SYNERGY DRIVE COMPANION</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        let currentUnitSystem = 'metric';
+        let lastCalculation = null;
+
+        window.onload = function() { 
+            displayHistory(); 
+            document.body.classList.remove('opacity-0');
+            if(!localStorage.getItem('companion_welcome')) {
+                openModal('welcomeModal');
+                localStorage.setItem('companion_welcome', 'true');
+            }
+        };
+
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+        function setUnits(system) {
+            currentUnitSystem = system;
+            const isMetric = system === 'metric';
+            document.getElementById('metricBtn').className = isMetric ? "text-[9px] font-black px-4 py-2 rounded-full bg-slate-900 text-white shadow-lg" : "text-[9px] font-black px-4 py-2 rounded-full text-slate-400";
+            document.getElementById('imperialBtn').className = !isMetric ? "text-[9px] font-black px-4 py-2 rounded-full bg-slate-900 text-white shadow-lg" : "text-[9px] font-black px-4 py-2 rounded-full text-slate-400";
+            document.getElementById('distLabel').innerText = isMetric ? "Trip Distance (km)" : "Trip Distance (Miles)";
+            document.getElementById('dashLabel').innerText = isMetric ? "Dash (L/100km)" : "Dash (MPG)";
+            document.getElementById('pumpLabel').innerText = isMetric ? "Pumped (Liters)" : "Pumped (US Gal)";
+            document.getElementById('checkDistLabel').innerText = isMetric ? "Current Trip (km)" : "Current Trip (Mi)";
+            document.getElementById('checkDashLabel').innerText = isMetric ? "Current Dash (L/100km)" : "Current Dash (MPG)";
+            resetResults();
+        }
+
+        function switchMode(mode) {
+            const isCalc = mode === 'calc';
+            document.getElementById('calcTab').classList.toggle('tab-active', isCalc);
+            document.getElementById('checkTab').classList.toggle('tab-active', !isCalc);
+            document.getElementById('calcForm').classList.toggle('hidden', !isCalc);
+            document.getElementById('checkForm').classList.toggle('hidden', isCalc);
+            resetResults();
+        }
+
+        function toggleOptional() {
+            const el = document.getElementById('optionalInputs');
+            const icon = document.getElementById('toggleIcon');
+            const isHidden = el.classList.contains('hidden');
+            el.classList.toggle('hidden');
+            icon.innerText = isHidden ? '−' : '+';
+        }
+
+        function resetResults() {
+            document.getElementById('calcResults').classList.add('hidden');
+            document.getElementById('checkResults').classList.add('hidden');
+        }
+
+        function calculateFuel() {
+            const dist = parseFloat(document.getElementById('distance').value);
+            const dash = parseFloat(document.getElementById('dashAvg').value);
+            const pump = parseFloat(document.getElementById('pumpAmount').value);
+            const price = parseFloat(document.getElementById('fuelPrice').value);
+
+            if (!dist || !dash || !pump) { showToast("Data Missing"); return; }
+
+            let trueEff, cap, rawCap, disc, effValue;
+            const alertEl = document.getElementById('maintenanceAlert');
+
+            if (currentUnitSystem === 'metric') {
+                effValue = (pump / dist) * 100;
+                trueEff = `${effValue.toFixed(2)} L/100`;
+                rawCap = pump + 3.5; 
+                cap = `${rawCap.toFixed(1)}L`;
+                disc = (((dash - effValue) / effValue) * 100).toFixed(1);
+                if (effValue > 5.8) alertEl.classList.remove('hidden'); else alertEl.classList.add('hidden');
+            } else {
+                effValue = dist / pump;
+                trueEff = `${effValue.toFixed(1)} MPG`;
+                rawCap = pump + 0.92; 
+                cap = `${rawCap.toFixed(2)}G`;
+                disc = (((dash - effValue) / effValue) * 100).toFixed(1);
+                if (effValue < 41) alertEl.classList.remove('hidden'); else alertEl.classList.add('hidden');
+            }
+
+            document.getElementById('trueEff').innerText = trueEff;
+            document.getElementById('capacity').innerText = cap;
+            document.getElementById('discrepancy').innerText = `${disc >= 0 ? '+' : ''}${disc}% vs Dash`;
+            if (price > 0) {
+                document.getElementById('totalCostValue').innerText = `$${(pump * price).toFixed(2)}`;
+                document.getElementById('costDisplay').classList.remove('hidden');
+            } else { document.getElementById('costDisplay').classList.add('hidden'); }
+
+            document.getElementById('calcResults').classList.remove('hidden');
+            lastCalculation = { trueEff, cap, rawCap, dist, unit: currentUnitSystem, cost: price > 0 ? `$${(pump * price).toFixed(2)}` : null };
+        }
+
+        function runFuelCheck() {
+            const currentDist = parseFloat(document.getElementById('checkDistance').value);
+            const currentDash = parseFloat(document.getElementById('checkDashAvg').value);
+            if (!currentDist || !currentDash) { showToast("Missing Entry Data"); return; }
+            const history = JSON.parse(localStorage.getItem('companion_history')) || [];
+            let baselineCap = currentUnitSystem === 'metric' ? 40.0 : 10.5;
+            let confidence = "Global Baseline applied.";
+
+            if (history.length > 0) {
+                let total = 0, count = 0;
+                const relevantLogs = history.filter(h => h.unit === currentUnitSystem).slice(0, 5);
+                if (relevantLogs.length > 0) {
+                    relevantLogs.forEach(e => { total += e.rawCap; count++; });
+                    baselineCap = total / count;
+                    confidence = `Calibrated via last ${count} cycles.`;
+                }
+            }
+
+            let fuelLeft, dte;
+            if (currentUnitSystem === 'metric') {
+                const burned = (currentDist * currentDash) / 100;
+                fuelLeft = Math.max(0, baselineCap - burned);
+                dte = currentDash > 0 ? (fuelLeft / currentDash) * 100 : 0;
+                document.getElementById('checkRemainingFuel').innerText = `${fuelLeft.toFixed(1)}L`;
+                document.getElementById('checkDTE').innerText = `${Math.floor(dte)}km`;
+            } else {
+                const burned = currentDist / currentDash;
+                fuelLeft = Math.max(0, baselineCap - burned);
+                dte = fuelLeft * currentDash;
+                document.getElementById('checkRemainingFuel').innerText = `${fuelLeft.toFixed(2)} Gal`;
+                document.getElementById('checkDTE').innerText = `${Math.floor(dte)}mi`;
+            }
+            document.getElementById('checkConfidence').innerText = confidence;
+            document.getElementById('checkResults').classList.remove('hidden');
+        }
+
+        function requestWeatherAndSave() {
+            if (!navigator.geolocation) { saveToHistory("Logged"); return; }
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                try {
+                    const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&current_weather=true`);
+                    const data = await res.json();
+                    saveToHistory(`${Math.round(data.current_weather.temperature)}°C`);
+                } catch { saveToHistory("Logged"); }
+            }, () => saveToHistory("Logged"));
+        }
+
+        function saveToHistory(env) {
+            const now = new Date();
+            const log = {
+                date: now.toLocaleDateString('en-US', {month:'short', day:'numeric'}),
+                eff: lastCalculation.trueEff,
+                cap: lastCalculation.cap,
+                rawCap: lastCalculation.rawCap,
+                unit: lastCalculation.unit,
+                dist: lastCalculation.dist + (lastCalculation.unit === 'metric' ? ' km' : ' mi'),
+                cost: lastCalculation.cost,
+                env: env
+            };
+            let history = JSON.parse(localStorage.getItem('companion_history')) || [];
+            history.unshift(log);
+            localStorage.setItem('companion_history', JSON.stringify(history));
+            displayHistory();
+            resetResults();
+            showToast("Log Committed");
+        }
+
+        function displayHistory() {
+            const history = JSON.parse(localStorage.getItem('companion_history')) || [];
+            const container = document.getElementById('logContainer');
+            if (history.length === 0) {
+                container.innerHTML = `<div class="text-center py-10 opacity-30 font-black text-[9px] uppercase tracking-[0.2em]">Zero Diagnostic Logs Found</div>`;
+                return;
+            }
+            container.innerHTML = history.map(item => `
+                <div class="bg-white/60 p-5 rounded-3xl border border-white/40 shadow-sm backdrop-blur-sm">
+                    <div class="flex justify-between items-start mb-3">
+                        <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">${item.date} • ${item.dist}</span>
+                        <span class="text-[8px] font-black text-sky-600 bg-sky-50 px-2.5 py-1 rounded-full border border-sky-100 uppercase">${item.env}</span>
+                    </div>
+                    <div class="flex justify-between items-end">
+                        <div>
+                            <span class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Efficiency</span>
+                            <span class="text-xl font-black text-slate-800">${item.eff}</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Limit</span>
+                            <span class="text-lg font-black text-slate-500">${item.cap}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function clearHistory() {
+            if(confirm("Permanently wipe your vehicle profile logs?")) {
+                localStorage.removeItem('companion_history');
+                displayHistory();
+            }
+        }
+
+        function showToast(msg) {
+            const toast = document.createElement('div');
+            toast.className = "fixed bottom-8 left-1/2 -translate-x-1/2 px-8 py-4 bg-slate-900 text-white text-[10px] font-black rounded-full shadow-2xl z-50 tracking-widest uppercase";
+            toast.innerText = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2500);
+        }
+    </script>
+</body>
+</html>
