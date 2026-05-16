@@ -53,26 +53,77 @@
 
         input:focus, textarea:focus { transform: scale(1.01); }
         button:active { transform: scale(0.98); }
+
+        .install-guide-step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 16px;
+            margin-bottom: 8px;
+        }
     </style>
 </head>
 <body class="text-slate-900 min-h-screen flex flex-col items-center px-4 py-8 md:py-12 opacity-0 transition-opacity duration-500">
 
     <div class="bg-stripe"></div>
 
-    <div id="welcomeModal" class="fixed inset-0 z-[100] flex items-center justify-center p-6 hidden">
-        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
-        <div class="glass-card max-w-sm w-full rounded-[2.5rem] p-8 relative modal-enter shadow-2xl">
-            <button onclick="closeModal('welcomeModal')" class="absolute top-6 right-6 w-8 h-8 flex items-center justify-center bg-slate-100 rounded-full text-slate-500 hover:text-slate-900">✕</button>
-            <h3 class="text-xl font-black mb-4 pr-8">Welcome, Prius Pilot! ⚡</h3>
-            <div class="text-xs text-slate-600 space-y-3 font-medium leading-relaxed">
-                <p>This tool is designed to solve the #1 issue with the Gen 2 Prius: <span class="font-bold text-slate-900">The "Guessing Game" fuel gauge.</span></p>
-                <p>By entering your fill-up data, we calculate your actual bladder capacity based on current temperature and location. This allows us to provide a high-confidence <span class="text-sky-600 font-bold">Distance To Empty</span> estimation.</p>
-                <p class="bg-sky-50 p-3 rounded-2xl border border-sky-100 text-sky-800">🔒 <span class="font-bold">Privacy First:</span> All data stays on your device. I do not collect any personal information.</p>
+    <!-- Welcome Onboarding Modal -->
+    <div id="welcomeModal" class="fixed inset-0 z-[120] flex items-center justify-center p-6 hidden">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md"></div>
+        <div class="glass-card max-w-md w-full rounded-[2.5rem] p-10 relative modal-enter shadow-2xl overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-sky-400 to-emerald-400"></div>
+            <h3 class="text-2xl font-black mb-4">Welcome, Gen 2 Prius Driver</h3>
+            <div class="space-y-4 text-sm font-medium text-slate-600 leading-relaxed">
+                <p>The <span class="text-slate-900 font-bold">Hybrid Synergy Drive Companion</span> was built to solve the #1 issue with the 2nd Gen Prius: <span class="text-sky-600 font-bold">guessing how much fuel you actually have left.</span></p>
+                <p>Because of the notorious "fuel bladder," your gauge can be unpredictable. To use this tool, simply enter your trip distance, your dash consumption (L/100km or MPG), and the amount you just pumped.</p>
+                <p>The system analyzes the date, your geographic location, and temperature to learn how your car's tank behaves in different seasons, providing a high-precision range estimate unique to your vehicle.</p>
+                <p class="bg-sky-50 p-4 rounded-2xl text-sky-700 text-[11px] font-bold border border-sky-100">
+                    🔒 <span class="uppercase tracking-wider">Privacy:</span> All diagnostics stay strictly on your device. No personal data is ever collected or transmitted.
+                </p>
             </div>
-            <button onclick="closeModal('welcomeModal')" class="w-full mt-6 bg-slate-900 text-white py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest">Get Started</button>
+            <button onclick="closeModal('welcomeModal')" class="w-full mt-8 bg-slate-900 text-white py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl">Initialize Module</button>
         </div>
     </div>
 
+    <!-- Install Modal -->
+    <div id="installModal" class="fixed inset-0 z-[110] flex items-center justify-center p-6 hidden">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md"></div>
+        <div class="glass-card max-w-sm w-full rounded-[2.5rem] p-8 relative modal-enter shadow-2xl">
+            <button onclick="closeModal('installModal')" class="absolute top-6 right-6 w-8 h-8 flex items-center justify-center bg-slate-100 rounded-full text-slate-500 hover:text-slate-900">✕</button>
+            
+            <div id="iosInstallContent" class="hidden">
+                <h3 class="text-xl font-black mb-2">Install on iOS</h3>
+                <p class="text-[10px] font-black text-sky-600 uppercase tracking-widest mb-6">Add to your home screen</p>
+                <div class="space-y-3">
+                    <div class="install-guide-step">
+                        <span class="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-black text-xs">1</span>
+                        <p class="text-[11px] font-bold text-slate-700">Tap the <span class="bg-slate-200 px-1.5 py-0.5 rounded font-black">Share</span> icon at the bottom of Safari.</p>
+                    </div>
+                    <div class="install-guide-step">
+                        <span class="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-black text-xs">2</span>
+                        <p class="text-[11px] font-bold text-slate-700">Scroll down and select <span class="bg-slate-200 px-1.5 py-0.5 rounded font-black">"Add to Home Screen"</span>.</p>
+                    </div>
+                    <div class="install-guide-step">
+                        <span class="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-black text-xs">3</span>
+                        <p class="text-[11px] font-bold text-slate-700">Tap <span class="text-sky-600 font-black">Add</span> in the top right corner.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="androidInstallContent" class="hidden text-center">
+                <div class="w-20 h-20 bg-sky-100 rounded-3xl mx-auto mb-6 flex items-center justify-center">
+                    <svg class="w-10 h-10 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                </div>
+                <h3 class="text-xl font-black mb-2">Install App</h3>
+                <p class="text-xs text-slate-500 font-medium mb-8 leading-relaxed">Install the Companion to your device for instant access to your vehicle's fuel diagnostics.</p>
+                <button onclick="triggerNativeInstall()" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl">Install Module</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Modal -->
     <div id="contactModal" class="fixed inset-0 z-[100] flex items-center justify-center p-6 hidden">
         <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"></div>
         <div class="glass-card max-w-md w-full rounded-[2.5rem] p-8 relative modal-enter shadow-2xl border-sky-200">
@@ -129,7 +180,7 @@
                 </div>
             </div>
 
-            <!-- Forms -->
+            <!-- Form: Fill Up -->
             <div id="calcForm" class="space-y-5">
                 <div class="space-y-1">
                     <label id="distLabel" class="block text-[11px] font-black text-slate-500 uppercase ml-2">Trip Distance (km)</label>
@@ -149,7 +200,7 @@
 
                 <div class="pt-2">
                     <button onclick="toggleOptional()" class="text-[10px] font-black text-sky-600 flex items-center gap-2 py-2 ml-2">
-                        <span id="toggleIcon" class="w-4 h-4 flex items-center justify-center bg-sky-100 rounded-full">+</span> FUEL COST & ECO IMPACT
+                        <span id="toggleIcon" class="w-4 h-4 flex items-center justify-center bg-sky-100 rounded-full font-black text-xs">+</span> FUEL COST & ECO IMPACT
                     </button>
                     <div id="optionalInputs" class="hidden mt-3 p-4 bg-sky-50/50 rounded-2xl border border-sky-100">
                         <label id="priceLabel" class="block text-[10px] font-black text-sky-700 uppercase mb-2">Unit Price ($)</label>
@@ -161,12 +212,13 @@
 
                 <!-- Results Display -->
                 <div id="calcResults" class="hidden mt-8 pt-8 border-t border-slate-100 animate-in slide-in-from-bottom-4 duration-500">
+                    <!-- Diagnostic Alert -->
                     <div id="maintenanceAlert" class="hidden mb-6 bg-amber-50 border border-amber-200 p-5 rounded-3xl">
                         <div class="flex items-start gap-3">
                             <div class="w-8 h-8 bg-amber-500 rounded-full flex items-center justify-center text-white shrink-0 shadow-lg">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
                             </div>
-                            <ul class="text-[10px] text-amber-800 space-y-2 font-bold leading-tight">
+                            <ul class="text-[10px] text-amber-800 space-y-2 font-bold leading-tight uppercase tracking-wide">
                                 <li>• Air Filter: Check and replace if dirty.</li>
                                 <li>• Tire Pressure: Correct pressure is key for efficiency.</li>
                                 <li>• Alignment: Misalignment increases fuel burn.</li>
@@ -174,6 +226,7 @@
                             </ul>
                         </div>
                     </div>
+
                     <div class="bg-gradient-to-br from-emerald-500 to-teal-600 p-6 rounded-3xl text-white hybrid-glow-green mb-4">
                         <span class="block text-[10px] font-black uppercase opacity-70 tracking-widest mb-1">True Net Efficiency</span>
                         <div class="flex justify-between items-end">
@@ -236,7 +289,21 @@
             </div>
             
             <div id="logContainer" class="space-y-4 max-h-[400px] overflow-y-auto pr-2 no-scrollbar">
-                <!-- Log Entry Point -->
+                <!-- Log entries will be injected here -->
+            </div>
+
+            <!-- Install Guide Trigger -->
+            <div id="installActionSection" class="hidden mt-6 p-4 bg-sky-50 rounded-3xl border border-sky-100 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-white rounded-2xl flex items-center justify-center shadow-sm">
+                        <svg class="w-5 h-5 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black text-slate-900 uppercase">App Offline Access</p>
+                        <p class="text-[9px] font-bold text-slate-400 uppercase">Install to Home Screen</p>
+                    </div>
+                </div>
+                <button onclick="openInstallModal()" class="px-5 py-2.5 bg-slate-900 text-white text-[9px] font-black rounded-xl uppercase tracking-widest shadow-lg">Setup</button>
             </div>
 
             <div class="mt-8 pt-8 border-t border-slate-200/60 text-center space-y-4">
@@ -258,7 +325,7 @@
 
         <footer class="text-center px-8 pb-12">
             <div class="text-[9px] text-slate-400 font-bold leading-relaxed space-y-4 uppercase tracking-[0.05em]">
-                <p>LEGAL DISCLAIMER: Every effort has been made to ensure the accuracy of this tool, however, estimates depend on sensor accuracy and variable environmental conditions. Do not rely solely on this tool to determine your fuel level. The developer accepts no liability for fuel exhaustion, vehicle damage, or any losses resulting from the use of this data.</p>
+                <p>LEGAL DISCLAIMER: Every effort has been made to ensure accuracy, however, estimates depend on sensor accuracy and environment. Do not rely solely on this tool to determine fuel level. The developer accepts no liability for fuel exhaustion, vehicle damage, or any losses.</p>
                 <p>NOT AFFILIATED WITH TOYOTA MOTOR CORPORATION. "Hybrid Synergy Drive" and "Prius" are registered trademarks of Toyota.</p>
                 <p class="text-slate-300 pt-4">© 2024 HYBRID SYNERGY DRIVE COMPANION</p>
             </div>
@@ -268,52 +335,63 @@
     <script>
         let currentUnitSystem = 'metric';
         let lastCalculation = null;
+        let deferredPrompt;
 
         window.onload = function() { 
             displayHistory(); 
             document.body.classList.remove('opacity-0');
+            
+            // Check for Welcome Modal
             if(!localStorage.getItem('companion_welcome')) {
                 openModal('welcomeModal');
                 localStorage.setItem('companion_welcome', 'true');
             }
+
+            // Detect Platform
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+            if (!isStandalone) {
+                document.getElementById('installActionSection').classList.remove('hidden');
+            }
+
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+            });
         };
 
-        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
-        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+        function switchMode(mode) {
+            document.getElementById('calcTab').classList.toggle('tab-active', mode === 'calc');
+            document.getElementById('checkTab').classList.toggle('tab-active', mode === 'check');
+            document.getElementById('calcTab').classList.toggle('text-slate-500', mode !== 'calc');
+            document.getElementById('checkTab').classList.toggle('text-slate-500', mode !== 'check');
+            document.getElementById('calcForm').classList.toggle('hidden', mode !== 'calc');
+            document.getElementById('checkForm').classList.toggle('hidden', mode !== 'check');
+        }
 
         function setUnits(system) {
             currentUnitSystem = system;
             const isMetric = system === 'metric';
-            document.getElementById('metricBtn').className = isMetric ? "text-[9px] font-black px-4 py-2 rounded-full bg-slate-900 text-white shadow-lg" : "text-[9px] font-black px-4 py-2 rounded-full text-slate-400";
-            document.getElementById('imperialBtn').className = !isMetric ? "text-[9px] font-black px-4 py-2 rounded-full bg-slate-900 text-white shadow-lg" : "text-[9px] font-black px-4 py-2 rounded-full text-slate-400";
-            document.getElementById('distLabel').innerText = isMetric ? "Trip Distance (km)" : "Trip Distance (Miles)";
-            document.getElementById('dashLabel').innerText = isMetric ? "Dash (L/100km)" : "Dash (MPG)";
-            document.getElementById('pumpLabel').innerText = isMetric ? "Pumped (Liters)" : "Pumped (US Gal)";
-            document.getElementById('checkDistLabel').innerText = isMetric ? "Current Trip (km)" : "Current Trip (Mi)";
-            document.getElementById('checkDashLabel').innerText = isMetric ? "Current Dash (L/100km)" : "Current Dash (MPG)";
-            resetResults();
-        }
+            document.getElementById('metricBtn').classList.toggle('bg-slate-900', isMetric);
+            document.getElementById('metricBtn').classList.toggle('text-white', isMetric);
+            document.getElementById('metricBtn').classList.toggle('text-slate-400', !isMetric);
+            document.getElementById('imperialBtn').classList.toggle('bg-slate-900', !isMetric);
+            document.getElementById('imperialBtn').classList.toggle('text-white', !isMetric);
+            document.getElementById('imperialBtn').classList.toggle('text-slate-400', isMetric);
 
-        function switchMode(mode) {
-            const isCalc = mode === 'calc';
-            document.getElementById('calcTab').classList.toggle('tab-active', isCalc);
-            document.getElementById('checkTab').classList.toggle('tab-active', !isCalc);
-            document.getElementById('calcForm').classList.toggle('hidden', !isCalc);
-            document.getElementById('checkForm').classList.toggle('hidden', isCalc);
-            resetResults();
+            document.getElementById('distLabel').innerText = isMetric ? "Trip Distance (km)" : "Trip Distance (Miles)";
+            document.getElementById('dashLabel').innerText = isMetric ? "Dash Avg (L/100km)" : "Dash Avg (MPG)";
+            document.getElementById('pumpLabel').innerText = isMetric ? "Pumped (L)" : "Pumped (Gal)";
+            document.getElementById('priceLabel').innerText = isMetric ? "Unit Price ($/L)" : "Unit Price ($/Gal)";
+            document.getElementById('checkDistLabel').innerText = isMetric ? "Current Trip (km)" : "Current Trip (Miles)";
+            document.getElementById('checkDashLabel').innerText = isMetric ? "Current Dash Avg (L/100km)" : "Current Dash Avg (MPG)";
         }
 
         function toggleOptional() {
-            const el = document.getElementById('optionalInputs');
+            const fields = document.getElementById('optionalInputs');
             const icon = document.getElementById('toggleIcon');
-            const isHidden = el.classList.contains('hidden');
-            el.classList.toggle('hidden');
+            const isHidden = fields.classList.contains('hidden');
+            fields.classList.toggle('hidden');
             icon.innerText = isHidden ? '−' : '+';
-        }
-
-        function resetResults() {
-            document.getElementById('calcResults').classList.add('hidden');
-            document.getElementById('checkResults').classList.add('hidden');
         }
 
         function calculateFuel() {
@@ -322,146 +400,149 @@
             const pump = parseFloat(document.getElementById('pumpAmount').value);
             const price = parseFloat(document.getElementById('fuelPrice').value);
 
-            if (!dist || !dash || !pump) { showToast("Data Missing"); return; }
+            if (!dist || !dash || !pump) return;
 
-            let trueEff, cap, rawCap, disc, effValue;
-            const alertEl = document.getElementById('maintenanceAlert');
-
+            let trueEff, rawCap, variance;
             if (currentUnitSystem === 'metric') {
-                effValue = (pump / dist) * 100;
-                trueEff = `${effValue.toFixed(2)} L/100`;
-                rawCap = pump + 3.5; 
-                cap = `${rawCap.toFixed(1)}L`;
-                disc = (((dash - effValue) / effValue) * 100).toFixed(1);
-                if (effValue > 5.8) alertEl.classList.remove('hidden'); else alertEl.classList.add('hidden');
+                trueEff = (pump / dist) * 100;
+                rawCap = pump + 4.0; // Bladder baseline
+                variance = ((dash - trueEff) / trueEff) * 100;
+                
+                document.getElementById('trueEff').innerText = trueEff.toFixed(2) + " L/100";
+                document.getElementById('capacity').innerText = rawCap.toFixed(1) + " Liters";
+                
+                // Alert threshold for maintenance tips
+                document.getElementById('maintenanceAlert').classList.toggle('hidden', trueEff <= 5.8);
             } else {
-                effValue = dist / pump;
-                trueEff = `${effValue.toFixed(1)} MPG`;
-                rawCap = pump + 0.92; 
-                cap = `${rawCap.toFixed(2)}G`;
-                disc = (((dash - effValue) / effValue) * 100).toFixed(1);
-                if (effValue < 41) alertEl.classList.remove('hidden'); else alertEl.classList.add('hidden');
+                trueEff = dist / pump;
+                rawCap = pump + 1.1; 
+                variance = ((dash - trueEff) / trueEff) * 100;
+
+                document.getElementById('trueEff').innerText = trueEff.toFixed(1) + " MPG";
+                document.getElementById('capacity').innerText = rawCap.toFixed(1) + " Gal";
+                
+                document.getElementById('maintenanceAlert').classList.toggle('hidden', trueEff >= 41);
             }
 
-            document.getElementById('trueEff').innerText = trueEff;
-            document.getElementById('capacity').innerText = cap;
-            document.getElementById('discrepancy').innerText = `${disc >= 0 ? '+' : ''}${disc}% vs Dash`;
-            if (price > 0) {
-                document.getElementById('totalCostValue').innerText = `$${(pump * price).toFixed(2)}`;
+            document.getElementById('discrepancy').innerText = (variance >= 0 ? '+' : '') + variance.toFixed(1) + "% VS DASH";
+            
+            if (price) {
                 document.getElementById('costDisplay').classList.remove('hidden');
-            } else { document.getElementById('costDisplay').classList.add('hidden'); }
+                document.getElementById('totalCostValue').innerText = "$" + (pump * price).toFixed(2);
+            }
 
             document.getElementById('calcResults').classList.remove('hidden');
-            lastCalculation = { trueEff, cap, rawCap, dist, unit: currentUnitSystem, cost: price > 0 ? `$${(pump * price).toFixed(2)}` : null };
+            lastCalculation = { eff: trueEff, cap: rawCap, dist: dist, system: currentUnitSystem };
         }
 
         function runFuelCheck() {
             const currentDist = parseFloat(document.getElementById('checkDistance').value);
             const currentDash = parseFloat(document.getElementById('checkDashAvg').value);
-            if (!currentDist || !currentDash) { showToast("Missing Entry Data"); return; }
-            const history = JSON.parse(localStorage.getItem('companion_history')) || [];
-            let baselineCap = currentUnitSystem === 'metric' ? 40.0 : 10.5;
-            let confidence = "Global Baseline applied.";
+            if (!currentDist || !currentDash) return;
+
+            const history = JSON.parse(localStorage.getItem('prius_history')) || [];
+            let capBaseline = (currentUnitSystem === 'metric' ? 38.5 : 10.2);
+            let conf = "Fallback profile (Default data)";
 
             if (history.length > 0) {
-                let total = 0, count = 0;
-                const relevantLogs = history.filter(h => h.unit === currentUnitSystem).slice(0, 5);
-                if (relevantLogs.length > 0) {
-                    relevantLogs.forEach(e => { total += e.rawCap; count++; });
-                    baselineCap = total / count;
-                    confidence = `Calibrated via last ${count} cycles.`;
+                let sum = 0, count = 0;
+                history.slice(0, 3).forEach(entry => {
+                    if (entry.rawCap) { sum += entry.rawCap; count++; }
+                });
+                if (count > 0) {
+                    capBaseline = sum / count;
+                    conf = "Active profile optimized from " + count + " logs";
                 }
             }
 
-            let fuelLeft, dte;
+            let rem, dte;
             if (currentUnitSystem === 'metric') {
                 const burned = (currentDist * currentDash) / 100;
-                fuelLeft = Math.max(0, baselineCap - burned);
-                dte = currentDash > 0 ? (fuelLeft / currentDash) * 100 : 0;
-                document.getElementById('checkRemainingFuel').innerText = `${fuelLeft.toFixed(1)}L`;
-                document.getElementById('checkDTE').innerText = `${Math.floor(dte)}km`;
+                rem = Math.max(0, capBaseline - burned);
+                dte = (rem / currentDash) * 100;
+                document.getElementById('checkRemainingFuel').innerText = rem.toFixed(1) + " L";
+                document.getElementById('checkDTE').innerText = Math.round(dte) + "km";
             } else {
                 const burned = currentDist / currentDash;
-                fuelLeft = Math.max(0, baselineCap - burned);
-                dte = fuelLeft * currentDash;
-                document.getElementById('checkRemainingFuel').innerText = `${fuelLeft.toFixed(2)} Gal`;
-                document.getElementById('checkDTE').innerText = `${Math.floor(dte)}mi`;
+                rem = Math.max(0, capBaseline - burned);
+                dte = rem * currentDash;
+                document.getElementById('checkRemainingFuel').innerText = rem.toFixed(1) + " GAL";
+                document.getElementById('checkDTE').innerText = Math.round(dte) + "mi";
             }
-            document.getElementById('checkConfidence').innerText = confidence;
+
+            document.getElementById('checkConfidence').innerText = conf;
             document.getElementById('checkResults').classList.remove('hidden');
         }
 
-        function requestWeatherAndSave() {
-            if (!navigator.geolocation) { saveToHistory("Logged"); return; }
-            navigator.geolocation.getCurrentPosition(async (pos) => {
-                try {
-                    const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&current_weather=true`);
-                    const data = await res.json();
-                    saveToHistory(`${Math.round(data.current_weather.temperature)}°C`);
-                } catch { saveToHistory("Logged"); }
-            }, () => saveToHistory("Logged"));
+        async function requestWeatherAndSave() {
+            if (!lastCalculation) return;
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(async (pos) => {
+                    try {
+                        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&current_weather=true`);
+                        const data = await res.json();
+                        saveLog(data.current_weather.temperature + "°C");
+                    } catch { saveLog("Saved"); }
+                }, () => saveLog("Saved"));
+            } else { saveLog("Saved"); }
         }
 
-        function saveToHistory(env) {
-            const now = new Date();
-            const log = {
-                date: now.toLocaleDateString('en-US', {month:'short', day:'numeric'}),
-                eff: lastCalculation.trueEff,
-                cap: lastCalculation.cap,
-                rawCap: lastCalculation.rawCap,
-                unit: lastCalculation.unit,
-                dist: lastCalculation.dist + (lastCalculation.unit === 'metric' ? ' km' : ' mi'),
-                cost: lastCalculation.cost,
-                env: env
+        function saveLog(weather) {
+            const entry = {
+                date: new Date().toLocaleDateString(),
+                eff: document.getElementById('trueEff').innerText,
+                cap: document.getElementById('capacity').innerText,
+                rawCap: lastCalculation.cap,
+                dist: lastCalculation.dist + (lastCalculation.system === 'metric' ? 'km' : 'mi'),
+                weather: weather
             };
-            let history = JSON.parse(localStorage.getItem('companion_history')) || [];
-            history.unshift(log);
-            localStorage.setItem('companion_history', JSON.stringify(history));
+            let history = JSON.parse(localStorage.getItem('prius_history')) || [];
+            history.unshift(entry);
+            localStorage.setItem('prius_history', JSON.stringify(history));
             displayHistory();
-            resetResults();
-            showToast("Log Committed");
+            document.getElementById('saveBtn').classList.add('hidden');
         }
 
         function displayHistory() {
-            const history = JSON.parse(localStorage.getItem('companion_history')) || [];
+            const history = JSON.parse(localStorage.getItem('prius_history')) || [];
             const container = document.getElementById('logContainer');
-            if (history.length === 0) {
-                container.innerHTML = `<div class="text-center py-10 opacity-30 font-black text-[9px] uppercase tracking-[0.2em]">Zero Diagnostic Logs Found</div>`;
-                return;
+            container.innerHTML = history.length ? '' : '<p class="text-center text-[10px] font-bold text-slate-400 py-8">NO DIAGNOSTIC LOGS RECORDED</p>';
+            history.forEach(h => {
+                const div = document.createElement('div');
+                div.className = "bg-white/50 p-4 rounded-2xl border border-slate-100 flex justify-between items-center";
+                div.innerHTML = `
+                    <div>
+                        <p class="text-[9px] font-black text-slate-400 uppercase mb-1">${h.date} // ${h.weather}</p>
+                        <p class="text-xs font-black text-slate-900">${h.eff} <span class="text-slate-400 px-2">|</span> ${h.cap}</p>
+                    </div>
+                    <p class="text-[10px] font-black text-slate-500 bg-slate-100 px-3 py-1 rounded-full">${h.dist}</p>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+        function openInstallModal() {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            document.getElementById('iosInstallContent').classList.toggle('hidden', !isIOS);
+            document.getElementById('androidInstallContent').classList.toggle('hidden', isIOS);
+            openModal('installModal');
+        }
+
+        async function triggerNativeInstall() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt = null;
+                closeModal('installModal');
             }
-            container.innerHTML = history.map(item => `
-                <div class="bg-white/60 p-5 rounded-3xl border border-white/40 shadow-sm backdrop-blur-sm">
-                    <div class="flex justify-between items-start mb-3">
-                        <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">${item.date} • ${item.dist}</span>
-                        <span class="text-[8px] font-black text-sky-600 bg-sky-50 px-2.5 py-1 rounded-full border border-sky-100 uppercase">${item.env}</span>
-                    </div>
-                    <div class="flex justify-between items-end">
-                        <div>
-                            <span class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Efficiency</span>
-                            <span class="text-xl font-black text-slate-800">${item.eff}</span>
-                        </div>
-                        <div class="text-right">
-                            <span class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Limit</span>
-                            <span class="text-lg font-black text-slate-500">${item.cap}</span>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
         }
 
         function clearHistory() {
-            if(confirm("Permanently wipe your vehicle profile logs?")) {
-                localStorage.removeItem('companion_history');
+            if (confirm("Wipe all local diagnostic history?")) {
+                localStorage.removeItem('prius_history');
                 displayHistory();
             }
-        }
-
-        function showToast(msg) {
-            const toast = document.createElement('div');
-            toast.className = "fixed bottom-8 left-1/2 -translate-x-1/2 px-8 py-4 bg-slate-900 text-white text-[10px] font-black rounded-full shadow-2xl z-50 tracking-widest uppercase";
-            toast.innerText = msg;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 2500);
         }
     </script>
 </body>
